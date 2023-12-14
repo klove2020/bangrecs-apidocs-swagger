@@ -1,8 +1,8 @@
-swagger: '2.0'
+swagger: "2.0"
 
 info:
-  description: 'BGM Recommender System API'
-  version: '4' 
+  description: "BGM Recommender System API"
+  version: "4"
   title: bangrecs API
 
 host: bangrecs.net
@@ -13,27 +13,24 @@ schemes:
 paths:
   /rec4app/{i}:
     get:
-      tags: 
-          - app
+      tags:
+        - app
       summary: 获取用户推荐
-      description: 根据用户ID和指定参数，返回推荐信息。
+      description: 根据用户ID和指定参数, 返回推荐信息。
       parameters:
         - in: path
           name: i
           required: true
-          schema:
-            type: string
+          type: string
           description: 用户名或用户ID
         - in: query
           name: type
-          schema:
-            type: string
+          type: string
           description: 类型
           default: 0
         - in: query
           name: update_f
-          schema:
-            type: boolean
+          type: boolean
           description: 是否实时更新收藏
           default: false
         # - in: query
@@ -60,8 +57,7 @@ paths:
         #   description: 结束日期
         - in: query
           name: topk
-          schema:
-            type: integer
+          type: integer
           description: 返回的条目数
           default: 10
         # - in: query
@@ -72,29 +68,26 @@ paths:
         #       type: string
         #   description: 标签列表
       responses:
-        '200':
+        200:
           description: 成功返回推荐结果
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        sid:
-                          type: integer
-                          description: 主题ID
-                        score:
-                          type: float
-                          description: 推荐得分
-        '400':
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sid:
+                      type: integer
+                      description: 主题ID
+                    score:
+                      type: float
+                      description: 推荐得分
+        400:
           description: 错误的请求
-        '404':
+        404:
           description: 未找到资源
-
 
   /rec/{i}/:
     post:
@@ -167,7 +160,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Item'
+                  $ref: "#/definitions/Item"
               relation_list:
                 type: array
                 items:
@@ -217,7 +210,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: '#/definitions/Item'
+                  $ref: "#/definitions/Item"
               relation_list:
                 type: array
                 items:
@@ -275,5 +268,3 @@ definitions:
         type: number
         format: double
         description: 转换得分
-
-
