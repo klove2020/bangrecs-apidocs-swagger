@@ -1,0 +1,279 @@
+swagger: '2.0'
+
+info:
+  description: 'BGM Recommender System API'
+  version: '4' 
+  title: bangrecs API
+
+host: bangrecs.net
+basePath: /api/v4
+schemes:
+  - https
+
+paths:
+  /rec4app/{i}:
+    get:
+      tags: 
+          - app
+      summary: 获取用户推荐
+      description: 根据用户ID和指定参数，返回推荐信息。
+      parameters:
+        - in: path
+          name: i
+          required: true
+          schema:
+            type: string
+          description: 用户名或用户ID
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: 类型
+          default: 0
+        - in: query
+          name: update_f
+          schema:
+            type: boolean
+          description: 是否实时更新收藏
+          default: false
+        # - in: query
+        #   name: IsTimeFilter
+        #   schema:
+        #     type: boolean
+        #   description: 是否时间过滤
+        # - in: query
+        #   name: IsTagFilter
+        #   schema:
+        #     type: boolean
+        #   description: 是否标签过滤
+        # - in: query
+        #   name: startDate
+        #   schema:
+        #     type: string
+        #     format: date
+        #   description: 开始日期
+        # - in: query
+        #   name: endDate
+        #   schema:
+        #     type: string
+        #     format: date
+        #   description: 结束日期
+        - in: query
+          name: topk
+          schema:
+            type: integer
+          description: 返回的条目数
+          default: 10
+        # - in: query
+        #   name: tags
+        #   schema:
+        #     type: array
+        #     items:
+        #       type: string
+        #   description: 标签列表
+      responses:
+        '200':
+          description: 成功返回推荐结果
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sid:
+                          type: integer
+                          description: 主题ID
+                        score:
+                          type: float
+                          description: 推荐得分
+        '400':
+          description: 错误的请求
+        '404':
+          description: 未找到资源
+
+
+  /rec/{i}/:
+    post:
+      tags:
+        - web
+      summary: 基于POST方法的用户推荐
+      description: 接受用户ID和JSON格式的参数，返回用户的推荐信息。
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: i
+          in: path
+          required: true
+          type: string
+          description: 用户名或用户ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: integer
+                description: 类型
+                default: 0
+              update_f:
+                type: boolean
+                description: 是否更新
+                default: false
+              strategy:
+                type: string
+                description: 策略
+                default: p
+              IsTimeFilter:
+                type: boolean
+                description: 是否时间过滤
+                default: false
+              IsTagFilter:
+                type: boolean
+                description: 是否标签过滤
+                default: false
+              startDate:
+                type: string
+                format: date
+                description: 开始日期
+              endDate:
+                type: string
+                format: date
+                description: 结束日期
+              topk:
+                type: integer
+                description: 返回的最大记录数
+                default: 10
+              popdays:
+                type: integer
+                description: 流行天数
+              tags:
+                type: array
+                items:
+                  type: string
+                description: 标签列表
+      responses:
+        200:
+          description: 成功返回推荐结果
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Item'
+              relation_list:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: integer
+                    format: int32
+                description: 相关的主题ID列表
+        400:
+          description: 错误的请求
+        404:
+          description: 未找到资源
+  /trans/{i}/:
+    post:
+      tags:
+        - transfer
+      summary: 基于POST方法获取转换后的数据
+      description: 接受条目ID和JSON格式的参数，返回转换后的数据列表。
+      parameters:
+        - in: path
+          name: i
+          required: true
+          type: string
+          description: 条目ID
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: integer
+                description: 主题类型
+              topk:
+                type: integer
+                description: 返回的条目数
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 成功返回转换后的数据
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Item'
+              relation_list:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: integer
+                description: 关联的条目ID列表
+        400:
+          description: 请求参数不正确或其他客户端错误
+        404:
+          description: 找不到指定的条目ID
+
+definitions:
+  Item:
+    type: object
+    properties:
+      date:
+        type: string
+        format: date-time
+        description: 日期
+      image_medium:
+        type: string
+        format: uri
+        description: 图片链接
+      name:
+        type: string
+        description: 名称
+      name_cn:
+        type: string
+        description: 中文名称
+      nsfw:
+        type: integer
+        format: int32
+        description: 是否为成人内容标识
+      rank:
+        type: integer
+        format: int32
+        description: 排名
+      score:
+        type: number
+        format: float
+        description: 得分
+      sid:
+        type: integer
+        format: int32
+        description: 条目ID
+      subject_type:
+        type: integer
+        format: int32
+        description: 主题类型
+      summary:
+        type: string
+        description: 摘要
+      trans_score:
+        type: number
+        format: double
+        description: 转换得分
+
+
