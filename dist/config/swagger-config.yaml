@@ -89,6 +89,121 @@ paths:
         404:
           description: 未找到资源
 
+  /rec4app2/{i}:
+    post:
+      tags:
+        - app
+      summary: 获取用户推荐
+      description: 根据用户ID和指定参数, 返回推荐信息。
+
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: i
+          in: path
+          required: true
+          type: string
+          description: 用户名或用户ID
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: integer
+                description: 类型(0,1,2,3,4,6),0代表全部类型推荐, 其余和bgm类型对应
+                default: 0
+              strategy:
+                type: string
+                description: 策略(无效, 还不支持该参数调整)
+                default: p
+              IsTimeFilter:
+                type: boolean
+                description: 是否时间过滤
+                default: false
+              IsTagFilter:
+                type: boolean
+                description: 是否标签过滤
+                default: false
+              startDate:
+                type: string
+                format: date
+                description: 开始日期
+              endDate:
+                type: string
+                format: date
+                description: 结束日期
+              topk:
+                type: integer
+                description: 返回的最大记录数
+                default: 10
+              popdays:
+                type: integer
+                description: 流行天数(无效, pop策略的参数)
+              tags:
+                type: array
+                items:
+                  type: string
+                description: 标签列表
+              collects:
+                type: array
+                description: 收藏列表
+                items:
+                  type: object
+                  properties:
+                    updated_at:
+                      type: string
+                      format: date-time
+                      description: 更新时间(必须的字段)
+                    comment:
+                      type: string
+                      description: 评论
+                    subject_id:
+                      type: integer
+                      format: int64
+                      description: 主题ID(必须的字段)
+                    subject_type:
+                      type: integer
+                      description: 主题类型(必须的字段)
+                    vol_status:
+                      type: integer
+                      description: 卷状态
+                    ep_status:
+                      type: integer
+                      description: 章节状态
+                    type:
+                      type: integer
+                      description: 类型(必须的字段)
+                    rate:
+                      type: integer
+                      description: 评分(必须的字段)
+      responses:
+        200:
+          description: 成功返回推荐结果
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sid:
+                      type: integer
+                      description: 主题ID
+                    score:
+                      type: float
+                      description: 推荐得分
+        400:
+          description: 错误的请求
+        404:
+          description: 未找到资源
+
+              
+
   /rec/{i}/:
     post:
       tags:
@@ -177,8 +292,8 @@ paths:
     post:
       tags:
         - transfer
-      summary: 基于POST方法获取转换后的数据
-      description: 接受条目ID和JSON格式的参数，返回转换后的数据列表。
+      summary: 获取条目转移列表
+      description: 接受条目ID和JSON格式的参数，返回条目转移列表。
       parameters:
         - in: path
           name: i
